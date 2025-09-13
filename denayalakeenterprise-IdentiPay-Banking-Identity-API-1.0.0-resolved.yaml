@@ -1,0 +1,128 @@
+openapi: 3.0.0
+info:
+  title: IdentiPay Banking Identity API
+  description: "API for verifying user banking identity, initiating payments, and checking payment status."
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/denayalakeenterprise/IdentiPay-Banking-Identity-API/1.0.0
+  description: SwaggerHub API Auto Mocking
+- url: https://api.identipay.com/v1
+paths:
+  /identity/verify:
+    post:
+      summary: Verify a customer's banking identity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/identity_verify_body"
+        required: true
+      responses:
+        "200":
+          description: Identity verified successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/inline_response_200"
+        "400":
+          description: Invalid request
+        "404":
+          description: Account not found
+  /payments/initiate:
+    post:
+      summary: Initiate a new payment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/payments_initiate_body"
+        required: true
+      responses:
+        "201":
+          description: Payment initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/inline_response_201"
+        "400":
+          description: Invalid request
+  /payments/{payment_id}/status:
+    get:
+      summary: Check the status of a payment
+      parameters:
+      - name: payment_id
+        in: path
+        required: true
+        schema:
+          type: string
+        example: pay_12345
+      responses:
+        "200":
+          description: Payment status retrieved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/inline_response_200_1"
+        "404":
+          description: Payment not found
+components:
+  schemas:
+    identity_verify_body:
+      type: object
+      properties:
+        account_number:
+          type: string
+          example: "1234567890"
+        bank_code:
+          type: string
+          example: "044"
+    inline_response_200:
+      type: object
+      properties:
+        status:
+          type: string
+          example: verified
+        customer_name:
+          type: string
+          example: John Doe
+    payments_initiate_body:
+      type: object
+      properties:
+        account_number:
+          type: string
+          example: "1234567890"
+        amount:
+          type: number
+          format: float
+          example: 5000.75
+        currency:
+          type: string
+          example: NGN
+        narration:
+          type: string
+          example: School Fees Payment
+    inline_response_201:
+      type: object
+      properties:
+        payment_id:
+          type: string
+          example: pay_12345
+        status:
+          type: string
+          example: pending
+    inline_response_200_1:
+      type: object
+      properties:
+        payment_id:
+          type: string
+          example: pay_12345
+        status:
+          type: string
+          example: success
+        amount:
+          type: number
+          format: float
+          example: 5000.75
+        currency:
+          type: string
+          example: NGN
